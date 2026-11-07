@@ -10,6 +10,8 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.audiovideotrimmer.databinding.FragmentSettingsBinding
@@ -43,6 +45,12 @@ class SettingsFragment : Fragment(), SectionScreen {
     // ---- SectionScreen
     override val sectionTitles: List<String> get() = TITLES
     override val selectedSection: Int get() = selected
+    override fun focusStart() {
+        _binding?.tvSettingsTitle?.let { v ->
+            v.post { ViewCompat.performAccessibilityAction(v, AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS, null) }
+        }
+    }
+
     override fun selectSection(index: Int) {
         if (index !in TITLES.indices) return
         selected = index

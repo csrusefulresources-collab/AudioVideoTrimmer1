@@ -224,30 +224,43 @@ class EditorFragment : Fragment(), SectionScreen {
 
     override fun onStart() {
         super.onStart()
-        createPlayer()
-        rebuildPlaylist(viewModel.resumePositionMs)
-        updatePlayPauseButton()
-        refreshPageContent()
-        ui.post(ticker)
+        if (!isHidden) startPlayback()
     }
 
     override fun onStop() {
         super.onStop()
-        ui.removeCallbacks(ticker)
-        viewModel.resumePositionMs = currentTimelineMs()
-        player?.release()
-        player = null
-        _binding?.playerView?.player = null
+        stopPlayback()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (hidden) {
-            player?.pause()
+            stopPlayback()
         } else {
             updateJumpLabels()
             refreshPageContent()
-            rebuildPlaylist(currentTimelineMs())
+            startPlayback()
+        }
+    }
+
+    private fun startPlayback() {
+        if (player == null) {
+            createPlayer()
+            rebuildPlaylist(viewModel.resumePositionMs)
+            updatePlayPauseButton()
+        }
+        refreshPageContent()
+        ui.removeCallbacks(ticker)
+        ui.post(ticker)
+    }
+
+    private fun stopPlayback() {
+        ui.removeCallbacks(ticker)
+        if (player != null) {
+            viewModel.resumePositionMs = currentTimelineMs()
+            player?.release()
+            player = null
+            _binding?.playerView?.player = null
         }
     }
 
@@ -272,6 +285,12 @@ class EditorFragment : Fragment(), SectionScreen {
     override val selectedSection: Int get() = viewModel.selectedTab
     override fun selectSection(index: Int) {
         switcher?.select(index)
+    }
+
+    override fun focusStart() {
+        _binding?.tvEditorTitle?.let { v ->
+            v.post { ViewCompat.performAccessibilityAction(v, AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS, null) }
+        }
     }
 
     /** Called when a recording was deleted elsewhere. */
@@ -414,6 +433,23 @@ class EditorFragment : Fragment(), SectionScreen {
         b.btnForward.setOnClickListener { jumpBy(getSeekSeconds() * 1000L) }
         fineControls(b.btnBackFine, b.btnGoToTime, b.btnForwardFine)
         fineControls(b.btnTrimBackFine, b.btnTrimGoTo, b.btnTrimForwardFine)
+
+        // ---- move (like GoldWave: beginning, end, markers)
+        b.btnToBegin.setOnClickListener { moveToBeginning() }
+        b.btnToEnd.setOnClickListener { moveToEnd() }
+        b.btnTrimToBegin.setOnClickListener { moveToBeginning() }
+        b.btnTrimToEnd.setOnClickListener { moveToEnd() }
+        b.btnTrimToStartMarker.setOnClickListener { moveToStartMarker() }
+        b.btnTrimToEndMarker.setOnClickListener { moveToEndMarker() }
+        b.btnStartEarlier.setOnClickListener { adjustStart(-getSeekSeconds() * 1000L) }
+        b.btnStartLater.setOnClickListener { adjustStart(getSeekSeconds() * 1000L) }
+        b.btnEndEarlier.setOnClickListener { adjustEnd(-getSeekSeconds() * 1000L) }
+        b.btnEndLater.setOnClickListener { adjustEnd(getSeekSeconds() * 1000L) }
+        b.btnHearStart.setOnClickListener { hearStart() }
+        b.btnHearEnd.setOnClickListener { hearEnd() }
+        b.btnTrimDelete.setOnClickListener { onDelete() }
+        b.btnPrevMark.setOnClickListener { moveToMark(forward = false) }
+        b.btnNextMark.setOnClickListener { moveToMark(forward = true) }
         setupSeekBar()
 
         // ---- selection (Edit + Trim pages share the same selection)
@@ -570,6 +606,84 @@ class EditorFragment : Fragment(), SectionScreen {
                 TimeFormat.spoken(project.selectionEndMs)
             )
         )
+    }
+
+    // ------------------------------------------------------------ move like GoldWave
+
+    private fun moveToBeginning() {
+        if (!ensureMedia()) return
+        seekToTimeline(0L)
+        announce("Moved to the beginning.")
+    }
+
+    private fun moveToEnd() {
+        if (!ensureMedia()) return
+        seekToTimeline(project.totalMs)
+        announce("Moved to the end, at ${TimeFormat.spoken(project.totalMs)}.")
+    }
+
+    private fun moveToStartMarker() {
+        if (!ensureMedia()) return
+        seekToTimeline(project.selectionStartMs)
+        announce("Moved to the start marker, at ${TimeFormat.spoken(project.selectionStartMs)}.")
+    }
+
+    private fun moveToEndMarker() {
+        if (!ensureMedia()) return
+        seekToTimeline(project.selectionEndMs)
+        announce("Moved to the end marker, at ${TimeFormat.spoken(project.selectionEndMs)}.")
+    }
+
+    private fun adjustStart(deltaMs: Long) {
+        if (!ensureMedia()) return
+        project.setSelectionStart(project.selectionStartMs + deltaMs)
+        updateSelectionViews()
+        announce(
+            "Start marker at ${TimeFormat.spoken(project.selectionStartMs)}. " +
+                "End marker at ${TimeFormat.spoken(project.selectionEndMs)}."
+        )
+    }
+
+    private fun adjustEnd(deltaMs: Long) {
+        if (!ensureMedia()) return
+        project.setSelectionEnd(project.selectionEndMs + deltaMs)
+        updateSelectionViews()
+        announce(
+            "End marker at ${TimeFormat.spoken(project.selectionEndMs)}. " +
+                "Start marker at ${TimeFormat.spoken(project.selectionStartMs)}."
+        )
+    }
+
+    /** Plays the first three seconds of the selection, to check where it starts. */
+    private fun hearStart() {
+        if (!ensureMedia()) return
+        seekToTimeline(project.selectionStartMs)
+        previewEndMs = minOf(project.selectionEndMs, project.selectionStartMs + 3000L)
+        player?.play()
+        announce("Playing the start of the selection.")
+    }
+
+    /** Plays the last three seconds of the selection, to check where it ends. */
+    private fun hearEnd() {
+        if (!ensureMedia()) return
+        seekToTimeline(maxOf(project.selectionStartMs, project.selectionEndMs - 3000L))
+        previewEndMs = project.selectionEndMs
+        player?.play()
+        announce("Playing the end of the selection.")
+    }
+
+    private fun moveToMark(forward: Boolean) {
+        if (!ensureMedia()) return
+        val pos = currentTimelineMs()
+        val marks = project.marks
+        val index = if (forward) marks.indexOfFirst { it > pos + 100L }
+        else marks.indexOfLast { it < pos - 100L }
+        if (index < 0) {
+            announce(if (forward) "There is no later mark." else "There is no earlier mark.")
+            return
+        }
+        seekToTimeline(marks[index])
+        announce("Mark ${index + 1} at ${TimeFormat.spoken(marks[index])}.")
     }
 
     private fun onCut() {
@@ -1680,7 +1794,11 @@ class EditorFragment : Fragment(), SectionScreen {
             bd.btnAddMark, bd.btnMarksEvery,
             bd.btnMixPick, bd.btnCompressSave, bd.btnRemoveSilence,
             bd.btnSaveAudioOnly, bd.btnSaveNoSound, bd.btnSaveFrame, bd.btnEffectsSave,
-            bd.btnPresetSmallest, bd.btnPresetSmall, bd.btnPresetBalanced
+            bd.btnPresetSmallest, bd.btnPresetSmall, bd.btnPresetBalanced,
+            bd.btnToBegin, bd.btnToEnd, bd.btnTrimToBegin, bd.btnTrimToEnd,
+            bd.btnTrimToStartMarker, bd.btnTrimToEndMarker,
+            bd.btnStartEarlier, bd.btnStartLater, bd.btnEndEarlier, bd.btnEndLater,
+            bd.btnHearStart, bd.btnHearEnd, bd.btnTrimDelete, bd.btnPrevMark, bd.btnNextMark
         )
         needsMedia.forEach { it.isEnabled = has }
         bd.btnOpen.isEnabled = idle

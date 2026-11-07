@@ -16,18 +16,11 @@ import androidx.fragment.app.commit
 import com.example.audiovideotrimmer.databinding.ActivityMainBinding
 import com.google.android.material.chip.Chip
 
-private const val TAG_HOME = "home"
-private const val TAG_RECORD = "record"
-private const val TAG_AUDIO = "audio"
-private const val TAG_VIDEO = "video"
-private const val TAG_SETTINGS = "settings"
-private val ALL_TAGS = listOf(TAG_HOME, TAG_RECORD, TAG_AUDIO, TAG_VIDEO, TAG_SETTINGS)
-
 /**
  * Two levels:
  *  - Home: the bottom bar has the four main buttons (Record, Audio editor, Video editor, Settings).
  *  - A section (for example Audio editor): the main buttons are hidden and the bottom bar shows
- *    "Back to main menu" and the buttons of that section only (Edit, Trim, Merge …).
+ *    the buttons of that section only (Edit, Trim, Merge …). The phone's Back button returns home.
  * The content in the middle always belongs to the one chosen section, so swiping never leaves it.
  */
 class MainActivity : AppCompatActivity() {
@@ -60,16 +53,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            // Use the platform FragmentTransaction API directly. This avoids
-            // relying on the optional commitNow Kotlin DSL extension.
-            supportFragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .add(R.id.fragmentContainer, HomeFragment(), TAG_HOME)
-                .add(R.id.fragmentContainer, RecordFragment(), TAG_RECORD)
-                .add(R.id.fragmentContainer, EditorFragment.newInstance(false), TAG_AUDIO)
-                .add(R.id.fragmentContainer, EditorFragment.newInstance(true), TAG_VIDEO)
-                .add(R.id.fragmentContainer, SettingsFragment(), TAG_SETTINGS)
-                .commitNow()
+            supportFragmentManager.commitNow {
+                setReorderingAllowed(true)
+                add(R.id.fragmentContainer, HomeFragment(), TAG_HOME)
+                add(R.id.fragmentContainer, RecordFragment(), TAG_RECORD)
+                add(R.id.fragmentContainer, EditorFragment.newInstance(false), TAG_AUDIO)
+                add(R.id.fragmentContainer, EditorFragment.newInstance(true), TAG_VIDEO)
+                add(R.id.fragmentContainer, SettingsFragment(), TAG_SETTINGS)
+            }
         } else {
             currentTag = savedInstanceState.getString(STATE_TAG, TAG_HOME)
         }
@@ -78,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         binding.btnMainAudio.setOnClickListener { enter(TAG_AUDIO) }
         binding.btnMainVideo.setOnClickListener { enter(TAG_VIDEO) }
         binding.btnMainSettings.setOnClickListener { enter(TAG_SETTINGS) }
-        binding.btnBackToMain.setOnClickListener { goHome() }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -133,9 +123,11 @@ class MainActivity : AppCompatActivity() {
         binding.mainBar.visibility = if (home) View.VISIBLE else View.GONE
         binding.sectionBar.visibility = if (home) View.GONE else View.VISIBLE
         if (!home) buildSectionChips(tag)
-        if (announce) binding.root.announceForAccessibility(
-            if (home) "Main menu" else "${titleFor(tag)}. Back to main menu is at the bottom."
-        )
+        if (announce) {
+            // Move the screen reader focus to the title of the screen that just opened
+            // (the button that was pressed has disappeared).
+            binding.root.postDelayed({ screenFor(tag)?.focusStart() }, 300L)
+        }
     }
 
     private fun screenFor(tag: String): SectionScreen? =
@@ -195,5 +187,11 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val STATE_TAG = "current_tag"
+        const val TAG_HOME = "home"
+        const val TAG_RECORD = "record"
+        const val TAG_AUDIO = "audio"
+        const val TAG_VIDEO = "video"
+        const val TAG_SETTINGS = "settings"
+        private val ALL_TAGS = listOf(TAG_HOME, TAG_RECORD, TAG_AUDIO, TAG_VIDEO, TAG_SETTINGS)
     }
 }

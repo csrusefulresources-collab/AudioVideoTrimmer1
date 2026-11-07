@@ -1,4 +1,4 @@
-# Audio Video Trimmer 4.1
+# Audio Video Trimmer 4.3
 
 Accessible Android app for **recording** and **editing** audio and video, built for TalkBack users first.
 Works on Android 9 (API 28) → Android 16.
@@ -6,7 +6,7 @@ Works on Android 9 (API 28) → Android 16.
 ## Navigation (two levels, no overlapping buttons)
 
 * **Main menu** (home): the bottom of the screen shows four buttons: **Record · Audio editor · Video editor · Settings**.
-* Open one and those four buttons are **hidden**. The bottom now shows **Back to main menu** and only the buttons of that part:
+* Open one and those four buttons are **hidden**. The bottom now shows only the buttons of that part (use the phone's **Back** button to return to the main menu):
 
 | Part | Buttons at the bottom |
 |---|---|
@@ -16,7 +16,7 @@ Works on Android 9 (API 28) → Android 16.
 | **Settings** | Recording · Audio · Video · General · About · Logs |
 
 * The middle of the screen shows **only the chosen button's content** and scrolls. While you are in Trim you only see and swipe through Trim; other tools are not on the screen.
-* The Back button of the phone does the same as *Back to main menu*, then exits from the main menu.
+* The phone's Back button returns to the main menu, then exits from the main menu.
 * In the editors the Open button is at the top of every page; play controls, position, status stay just above the section buttons.
 
 ## Same signature for every update
@@ -36,8 +36,8 @@ The **first** time after switching to this key, the old app (signed with a rando
 ## Editors (audio and video)
 
 * **Edit** – selection, cut, copy, delete, paste, insert file, undo, save.
-* **Trim** – set start/end, *keep only selection*, *cut everything before / after here*, save the selection as a new file.
-* **Split** – split marks (also every 10 s / 30 s / 1 min / 5 min / 10 min), one file per part.
+* **Trim** (GoldWave style) – *Move to beginning / end / start marker / end marker*, nudge, go to time; *set start / end marker*, move a marker earlier / later; *hear the start / the end* (3 seconds); *keep only selection*, *delete selection*, *cut everything before / after here*, save the selection as a new file.
+* **Split** – previous / next mark; split marks (also every 10 s / 30 s / 1 min / 5 min / 10 min), one file per part.
 * **Merge** – join several files in the order you choose.
 * **Mix** – mix a second sound (e.g. music) with the main file; volumes for both; the added sound repeats until the end. In the video editor this adds music to a video.
 * **Compress** – presets *Smallest / Small / Balanced*; audio 16–192 kbps and mono; video picture size down to 240p, bitrate from 250 kbps, smaller or no sound; optional target size in MB; estimated size shown first.

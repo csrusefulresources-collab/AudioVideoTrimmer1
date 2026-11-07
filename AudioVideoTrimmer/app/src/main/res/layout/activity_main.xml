@@ -59,7 +59,7 @@
             app:icon="@drawable/ic_settings" />
     </LinearLayout>
 
-    <!-- Section bar: replaces the main menu while a section (Record, Audio editor…) is open -->
+    <!-- Section bar: replaces the main menu while a section (Record, Audio editor…) is open. The phone's Back button returns to the main menu. -->
     <LinearLayout
         android:id="@+id/sectionBar"
         android:layout_width="match_parent"
@@ -72,13 +72,6 @@
         android:paddingBottom="4dp"
         android:visibility="gone">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnBackToMain"
-            style="@style/Widget.App.Button.Compact"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Back to main menu"
-            app:icon="@drawable/ic_back" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/sectionChips"

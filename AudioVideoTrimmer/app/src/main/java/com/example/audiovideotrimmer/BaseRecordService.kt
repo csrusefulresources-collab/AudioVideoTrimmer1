@@ -179,6 +179,7 @@ abstract class BaseRecordService : Service() {
             stopSelf()
             return
         }
+        val wasCountdown = RecordState.state.value.phase == Phase.COUNTDOWN
         finishing = true
         AppLog.i("Record", "Stop requested: $kind")
         handler.removeCallbacksAndMessages(null)
@@ -212,7 +213,7 @@ abstract class BaseRecordService : Service() {
                 return
             }
         } else {
-            RecordState.post("Recording stopped, but nothing was recorded.")
+            RecordState.post(if (wasCountdown) "Recording cancelled." else "Recording stopped, but nothing was recorded.")
         }
         stopSelf()
     }

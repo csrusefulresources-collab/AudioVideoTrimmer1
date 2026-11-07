@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.audiovideotrimmer"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.audiovideotrimmer"
         minSdk = 28  // Android 9
-        targetSdk = 36  // Android 16; minSdk 28 keeps Android 9 support
+        targetSdk = 35  // Android 15/16 compatible
         versionCode = 8
         versionName = "4.3.0"
 

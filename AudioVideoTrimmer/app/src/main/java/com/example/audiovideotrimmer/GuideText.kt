@@ -5,10 +5,10 @@ object GuideText {
     val sections: List<Pair<String, String>> = listOf(
         "Getting started" to
             "The main menu has four buttons at the bottom of the screen: Record, Audio editor, Video editor and Settings. " +
-            "When you open one, these four buttons are hidden. The bottom of the screen then shows Back to main menu " +
-            "and the buttons of that part only, for example Edit, Trim, Split, Merge, Mix, Effects, Compress and Tools in the editors. " +
+            "When you open one, these four buttons are hidden. The bottom of the screen then shows " +
+            "the buttons of that part only, for example Edit, Trim, Split, Merge, Mix, Effects, Compress and Tools in the editors. " +
             "The middle of the screen shows only the content of the chosen button, so you swipe only through that content. " +
-            "Press Back to main menu, or the phone's Back button, to return and choose something else.",
+            "Use the Back button of your phone to return to the main menu and choose something else.",
 
         "Record tab – Record" to
             "Choose Audio, Video or Screen. A short sentence under the buttons tells you exactly how the recording will be made. " +
@@ -46,11 +46,15 @@ object GuideText {
             "Undo goes back one step, up to fifty steps. Nothing is saved until you press Save edited file.",
 
         "Trim tab" to
-            "The easy way to keep only the part you want. Press Cut everything before here or Cut everything after here at the right moment. " +
-            "Or set a start and an end and press Trim to keep only that part. Save selection as a new file saves the part without changing your edit.",
+            "Works like the trim tools of a sound editor. Move: Move to beginning, Move to end, Move to start marker, Move to end marker, " +
+            "and Nudge back or forward, which moves a tenth of a second. Go to time lets you type a time. " +
+            "Markers: Set start marker here and Set end marker here; Start marker earlier or later and End marker earlier or later move a marker by your jump size. " +
+            "Listen: Play selection, Hear the start and Hear the end play three seconds at the edges so you can check them. " +
+            "Trim: keep only the selection, Delete the selection, Cut everything before here, Cut everything after here, " +
+            "or Save selection as a new file. Select everything puts the markers back to the beginning and the end.",
 
         "Split tab" to
-            "Play the file and press Add split mark here at every place where you want a cut. Add marks every… adds marks at equal distances, for example every minute. " +
+            "Play the file and press Add split mark here at every place where you want a cut. Add marks every… adds marks at equal distances, for example every minute. Previous mark and Next mark move you from mark to mark. " +
             "Split and save creates one file for each part. Marks can be deleted one by one.",
 
         "Merge tab" to

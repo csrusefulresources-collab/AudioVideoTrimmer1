@@ -154,27 +154,13 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnPause"
                             style="@style/Widget.App.Button.Tonal"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
-                            android:layout_weight="1"
                             android:minHeight="72dp"
                             android:text="Pause"
                             app:icon="@drawable/ic_pause" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnStop"
-                            style="@style/Widget.App.Button"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            android:layout_weight="1"
-                            android:minHeight="72dp"
-                            android:text="Stop and save"
-                            android:textColor="@color/white"
-                            app:backgroundTint="@color/record_red"
-                            app:icon="@drawable/ic_stop"
-                            app:iconTint="@color/white" />
                     </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -256,6 +242,7 @@
 
                 <TextView
                     android:id="@+id/tvLastTime"
+                    android:importantForAccessibility="no"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -340,6 +327,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
             </LinearLayout>
+
 
 
         </LinearLayout>

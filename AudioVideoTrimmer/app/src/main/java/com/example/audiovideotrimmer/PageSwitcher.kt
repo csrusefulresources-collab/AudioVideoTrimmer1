@@ -8,6 +8,9 @@ interface SectionScreen {
     val sectionTitles: List<String>
     val selectedSection: Int
     fun selectSection(index: Int)
+
+    /** Puts the screen reader focus on the title of this screen. */
+    fun focusStart()
 }
 
 /** Shows exactly one "page" (a group of views) at a time, so the other sections are not reachable. */

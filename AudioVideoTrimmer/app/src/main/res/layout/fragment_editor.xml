@@ -130,13 +130,37 @@
                     android:baselineAligned="false"
                     android:orientation="horizontal">
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnToBegin"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Move to beginning"
+                    app:icon="@drawable/ic_rewind" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnToEnd"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Move to end"
+                    app:icon="@drawable/ic_forward" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnBackFine"
                     style="@style/Widget.App.Button.Compact"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="Back 0.1 second" />
+                    android:text="Nudge back" />
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnGoToTime"
                     style="@style/Widget.App.Button.Compact"
@@ -153,7 +177,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="Forward 0.1 second" />
+                    android:text="Nudge forward" />
                 </LinearLayout>
                 <TextView
                     android:layout_width="match_parent"
@@ -322,7 +346,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="4dp"
-                    android:text="Keep only the part you want. Play to the start point and press Set start. Play to the end point and press Set end."
+                    android:text="Move to a point, set the start marker and the end marker, listen to the ends, then trim."
                     android:textAppearance="?attr/textAppearanceBodyLarge" />
                 <TextView
                     android:layout_width="match_parent"
@@ -330,8 +354,56 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="12dp"
                     android:accessibilityHeading="true"
-                    android:text="Position"
+                    android:text="Move"
                     android:textAppearance="@style/TextAppearance.App.Section" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimToBegin"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Move to beginning"
+                    app:icon="@drawable/ic_rewind" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimToEnd"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Move to end"
+                    app:icon="@drawable/ic_forward" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimToStartMarker"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Move to start marker"
+                    app:icon="@drawable/ic_flag" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimToEndMarker"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Move to end marker"
+                    app:icon="@drawable/ic_flag" />
+                </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -344,7 +416,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="Back 0.1 second" />
+                    android:text="Nudge back" />
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTrimGoTo"
                     style="@style/Widget.App.Button.Compact"
@@ -361,8 +433,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="Forward 0.1 second" />
+                    android:text="Nudge forward" />
                 </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Markers"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -375,7 +455,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="Set start here"
+                    android:text="Set start marker here"
                     app:icon="@drawable/ic_flag" />
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTrimSetEnd"
@@ -384,8 +464,56 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="Set end here"
+                    android:text="Set end marker here"
                     app:icon="@drawable/ic_flag" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStartEarlier"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Start marker earlier"
+                    app:icon="@drawable/ic_rewind" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStartLater"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Start marker later"
+                    app:icon="@drawable/ic_forward" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEndEarlier"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="End marker earlier"
+                    app:icon="@drawable/ic_rewind" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEndLater"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="End marker later"
+                    app:icon="@drawable/ic_forward" />
                 </LinearLayout>
                 <TextView
                     android:id="@+id/tvTrimInfo"
@@ -395,30 +523,54 @@
                     android:layout_marginTop="4dp"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Listen"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimPlay"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Play selection"
+                    app:icon="@drawable/ic_play" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:baselineAligned="false"
                     android:orientation="horizontal">
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTrimPlay"
-                    style="@style/Widget.App.Button.Outlined"
+                    android:id="@+id/btnHearStart"
+                    style="@style/Widget.App.Button.Compact"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="Play selection"
+                    android:text="Hear the start"
                     app:icon="@drawable/ic_play" />
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTrimReset"
-                    style="@style/Widget.App.Button.Outlined"
+                    android:id="@+id/btnHearEnd"
+                    style="@style/Widget.App.Button.Compact"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
-                    android:text="Reset selection"
-                    app:icon="@drawable/ic_selection" />
+                    android:text="Hear the end"
+                    app:icon="@drawable/ic_play" />
                 </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Trim"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTrimKeep"
                     style="@style/Widget.App.Button.Tonal"
@@ -427,14 +579,14 @@
                     android:layout_margin="4dp"
                     android:text="Trim: keep only the selection"
                     app:icon="@drawable/ic_crop" />
-                <TextView
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimDelete"
+                    style="@style/Widget.App.Button.Tonal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="12dp"
-                    android:accessibilityHeading="true"
-                    android:text="Quick trim at the current position"
-                    android:textAppearance="@style/TextAppearance.App.Section" />
+                    android:layout_margin="4dp"
+                    android:text="Delete the selection"
+                    app:icon="@drawable/ic_delete" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -467,6 +619,14 @@
                     android:layout_margin="4dp"
                     android:text="Save selection as a new file"
                     app:icon="@drawable/ic_save" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimReset"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Select everything"
+                    app:icon="@drawable/ic_selection" />
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/pageSplit"
@@ -506,6 +666,30 @@
                     android:accessibilityHeading="true"
                     android:text="Marks"
                     android:textAppearance="@style/TextAppearance.App.Section" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPrevMark"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Previous mark"
+                    app:icon="@drawable/ic_rewind" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNextMark"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Next mark"
+                    app:icon="@drawable/ic_forward" />
+                </LinearLayout>
                 <TextView
                     android:id="@+id/tvMarksEmpty"
                     android:layout_width="match_parent"
@@ -869,6 +1053,7 @@
 
             <TextView
                 android:id="@+id/tvCurrentPosition"
+                android:importantForAccessibility="no"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -878,6 +1063,7 @@
 
             <TextView
                 android:id="@+id/tvDuration"
+                android:importantForAccessibility="no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total length 00:00.0"

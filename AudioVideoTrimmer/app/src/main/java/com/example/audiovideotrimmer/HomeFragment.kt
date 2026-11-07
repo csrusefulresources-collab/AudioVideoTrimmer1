@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.fragment.app.Fragment
 import com.example.audiovideotrimmer.databinding.FragmentHomeBinding
 
 /** The main page. The four main buttons are at the bottom of the screen. */
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), SectionScreen {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -25,8 +27,8 @@ class HomeFragment : Fragment() {
         SettingsUi.paragraph(
             ctx, box,
             "Choose what you want to do with the four buttons at the bottom of the screen. " +
-                "When you open one, the bottom of the screen shows the buttons of that part only, " +
-                "and the button Back to main menu brings you back here."
+                "When you open one, the bottom of the screen shows the buttons of that part only. " +
+                "Use the Back button of your phone to return here."
         )
         SettingsUi.heading(ctx, box, "Record")
         SettingsUi.paragraph(ctx, box, "Record sound in high quality, record video with the camera, or record the screen. Listen to your recordings, share them, or send them to an editor.")
@@ -36,6 +38,16 @@ class HomeFragment : Fragment() {
         SettingsUi.paragraph(ctx, box, "The same tools for video, plus rotate, mirror, brightness, contrast, saving only the sound, and saving a picture of a frame.")
         SettingsUi.heading(ctx, box, "Settings")
         SettingsUi.paragraph(ctx, box, "Recording, audio, video and general settings, the user guide, contact with the developer, and logs for bug reports.")
+    }
+
+    override val sectionTitles: List<String> get() = emptyList()
+    override val selectedSection: Int get() = 0
+    override fun selectSection(index: Int) {}
+
+    override fun focusStart() {
+        _binding?.homeContent?.getChildAt(0)?.let { v ->
+            v.post { ViewCompat.performAccessibilityAction(v, AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS, null) }
+        }
     }
 
     override fun onDestroyView() {

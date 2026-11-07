@@ -35,6 +35,7 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -66,6 +67,8 @@ class RecordFragment : Fragment(), SectionScreen {
     private var selectedTab = 0
 
     private var lastPhase = Phase.IDLE
+    private var lastActive = false
+    private var focusRecordAfterChange = false
     private var lastCountdown = -1
     private var lastMinute = 0
     private var lastLevelWarning = 0L
@@ -134,6 +137,12 @@ class RecordFragment : Fragment(), SectionScreen {
         switcher?.select(index)
     }
 
+    override fun focusStart() {
+        _b?.tvRecordTitle?.let { v ->
+            v.post { ViewCompat.performAccessibilityAction(v, AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS, null) }
+        }
+    }
+
     // ================================================================ lifecycle
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -166,9 +175,13 @@ class RecordFragment : Fragment(), SectionScreen {
             }
         }
 
-        b.btnRecord.setOnClickListener { onStartClicked() }
+        // One big button that changes its label (Start → Stop and save), so the screen reader
+        // focus stays on it and the user can stop the recording right away.
+        b.btnRecord.setOnClickListener {
+            focusRecordAfterChange = true
+            if (RecordState.isBusy) onStopClicked() else onStartClicked()
+        }
         b.btnPause.setOnClickListener { onPauseClicked() }
-        b.btnStop.setOnClickListener { onStopClicked() }
         b.btnSayTime.setOnClickListener {
             val ms = RecordState.state.value.elapsedMs
             announce("Recording time: ${TimeFormat.spoken(ms)}.", force = true)
@@ -221,32 +234,35 @@ class RecordFragment : Fragment(), SectionScreen {
 
     override fun onStart() {
         super.onStart()
-        createPlayer()
-        rebuildQuickSettings()
-        refreshLast()
-        handler.post(lastTicker)
-        if (mode == Mode.VIDEO && !isHidden) bindCameraIfPossible()
+        if (!isHidden) startScreen()
     }
 
     override fun onStop() {
         super.onStop()
+        stopScreen()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) stopScreen() else startScreen()
+    }
+
+    /** Called when this part is shown: player for the last recording, camera preview. */
+    private fun startScreen() {
+        if (player == null) createPlayer()
+        rebuildQuickSettings()
+        refreshLast()
+        handler.removeCallbacks(lastTicker)
+        handler.post(lastTicker)
+        if (mode == Mode.VIDEO) bindCameraIfPossible()
+    }
+
+    private fun stopScreen() {
         handler.removeCallbacks(lastTicker)
         player?.release()
         player = null
         _b?.playerViewLast?.player = null
         if (activeRecording == null) unbindCamera()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (hidden) {
-            player?.pause()
-            if (activeRecording == null) unbindCamera()
-        } else {
-            rebuildQuickSettings()
-            refreshLast()
-            if (mode == Mode.VIDEO) bindCameraIfPossible()
-        }
     }
 
     override fun onDestroyView() {
@@ -349,13 +365,15 @@ class RecordFragment : Fragment(), SectionScreen {
         bd.tvModeHelp.text = modeHelp()
         bd.tvSettingsSummary.text = summary()
         bd.cameraPreview.visibility = if (mode == Mode.VIDEO) View.VISIBLE else View.GONE
-        bd.btnRecord.text = getString(
-            when (mode) {
-                Mode.AUDIO -> R.string.rec_start_audio
-                Mode.VIDEO -> R.string.rec_start_video
-                Mode.SCREEN -> R.string.rec_start_screen
-            }
-        )
+        if (!RecordState.isBusy) {
+            bd.btnRecord.text = getString(
+                when (mode) {
+                    Mode.AUDIO -> R.string.rec_start_audio
+                    Mode.VIDEO -> R.string.rec_start_video
+                    Mode.SCREEN -> R.string.rec_start_screen
+                }
+            )
+        }
         if (mode == Mode.VIDEO && videoCapture == null) bindCameraIfPossible()
     }
 
@@ -663,8 +681,7 @@ class RecordFragment : Fragment(), SectionScreen {
         }
 
         bd.tvTimer.text = TimeFormat.clock(s.elapsedMs)
-        bd.tvTimer.importantForAccessibility =
-            if (active) View.IMPORTANT_FOR_ACCESSIBILITY_NO else View.IMPORTANT_FOR_ACCESSIBILITY_YES
+        bd.tvTimer.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         bd.tvRecState.text = when (s.phase) {
             Phase.IDLE -> getString(R.string.rec_state_ready)
             Phase.COUNTDOWN -> "Starting in ${s.countdown}"
@@ -672,10 +689,23 @@ class RecordFragment : Fragment(), SectionScreen {
             Phase.PAUSED -> "Paused"
         }
 
-        bd.btnRecord.visibility = if (active) View.GONE else View.VISIBLE
-        bd.activeControls.visibility = if (active) View.VISIBLE else View.GONE
-        bd.btnPause.visibility = if (s.phase == Phase.RECORDING || s.phase == Phase.PAUSED) View.VISIBLE else View.GONE
-        bd.btnSayTime.visibility = if (active) View.VISIBLE else View.GONE
+        // The big button stays in the same place and changes its label and icon.
+        bd.btnRecord.text = when (s.phase) {
+            Phase.IDLE -> getString(
+                when (mode) {
+                    Mode.AUDIO -> R.string.rec_start_audio
+                    Mode.VIDEO -> R.string.rec_start_video
+                    Mode.SCREEN -> R.string.rec_start_screen
+                }
+            )
+            Phase.COUNTDOWN -> "Cancel the countdown"
+            else -> getString(R.string.rec_stop)
+        }
+        bd.btnRecord.icon = AppCompatResources.getDrawable(
+            requireContext(), if (active) R.drawable.ic_stop else R.drawable.ic_record
+        )
+        val running = s.phase == Phase.RECORDING || s.phase == Phase.PAUSED
+        bd.activeControls.visibility = if (running) View.VISIBLE else View.GONE
         if (s.phase == Phase.PAUSED) {
             bd.btnPause.setText(R.string.rec_resume)
             bd.btnPause.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_play)
@@ -684,8 +714,19 @@ class RecordFragment : Fragment(), SectionScreen {
             bd.btnPause.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_pause)
         }
 
-        for (i in 0 until bd.modeGroup.childCount) bd.modeGroup.getChildAt(i).isEnabled = !active
-        SettingsUi.setEnabledDeep(bd.recSettingsContainer, !active)
+        if (active != lastActive) {
+            lastActive = active
+            for (i in 0 until bd.modeGroup.childCount) bd.modeGroup.getChildAt(i).isEnabled = !active
+            SettingsUi.setEnabledDeep(bd.recSettingsContainer, !active)
+        }
+        if (focusRecordAfterChange && s.phase != lastPhase) {
+            focusRecordAfterChange = false
+            bd.btnRecord.post {
+                _b?.btnRecord?.let {
+                    ViewCompat.performAccessibilityAction(it, AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS, null)
+                }
+            }
+        }
 
         val showLevel = active && s.kind == RecordKind.AUDIO
         bd.levelGroup.visibility = if (showLevel) View.VISIBLE else View.GONE
