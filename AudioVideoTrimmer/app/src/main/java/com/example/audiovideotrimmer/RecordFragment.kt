@@ -234,21 +234,21 @@ class RecordFragment : Fragment(), SectionScreen {
 
     override fun onStart() {
         super.onStart()
-        if (!isHidden) startScreen()
+        if (!isHidden) showUi()
     }
 
     override fun onStop() {
         super.onStop()
-        stopScreen()
+        hideUi()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (hidden) stopScreen() else startScreen()
+        if (hidden) hideUi() else showUi()
     }
 
     /** Called when this part is shown: player for the last recording, camera preview. */
-    private fun startScreen() {
+    private fun showUi() {
         if (player == null) createPlayer()
         rebuildQuickSettings()
         refreshLast()
@@ -257,7 +257,7 @@ class RecordFragment : Fragment(), SectionScreen {
         if (mode == Mode.VIDEO) bindCameraIfPossible()
     }
 
-    private fun stopScreen() {
+    private fun hideUi() {
         handler.removeCallbacks(lastTicker)
         player?.release()
         player = null
