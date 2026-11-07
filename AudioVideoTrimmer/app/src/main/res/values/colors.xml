@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#0D47A1</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <!-- Button backgrounds with white text (contrast ≥ 5:1) -->
+    <color name="marker_start">#2E7D32</color>
+    <color name="marker_end">#C62828</color>
+    <!-- Text colors on the normal surface -->
+    <color name="marker_start_text">#1B5E20</color>
+    <color name="marker_end_text">#B71C1C</color>
+    <color name="record_red">#C62828</color>
+</resources>

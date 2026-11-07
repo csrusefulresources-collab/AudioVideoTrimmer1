@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".EditorFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/pagesScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tvEditorTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:accessibilityHeading="true"
+                    android:text="Audio editor"
+                    android:textAppearance="@style/TextAppearance.App.Heading"
+                    android:textColor="?attr/colorPrimary" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOpen"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Open audio file"
+                    app:icon="@drawable/ic_folder_open" />
+                <TextView
+                    android:id="@+id/tvMediaInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textStyle="bold" />
+                <LinearLayout
+                    android:id="@+id/progressGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvProgress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:contentDescription="Saving progress"
+                        android:max="100" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCancel"
+                        style="@style/Widget.App.Button.Compact"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Cancel"
+                        app:icon="@drawable/ic_close" />
+                </LinearLayout>
+                <androidx.media3.ui.PlayerView
+                    android:id="@+id/playerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/black"
+                    android:importantForAccessibility="no"
+                    android:visibility="gone"
+                    app:resize_mode="fit"
+                    app:use_controller="false" />
+            <LinearLayout
+                android:id="@+id/pageEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnInsertFile"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Insert file here"
+                    app:icon="@drawable/ic_add" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUndo"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Undo"
+                    app:icon="@drawable/ic_undo" />
+                </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Position"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBackFine"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Back 0.1 second" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGoToTime"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Go to time"
+                    app:icon="@drawable/ic_time" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnForwardFine"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Forward 0.1 second" />
+                </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Selection"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <TextView
+                    android:id="@+id/tvStartTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Selection start"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvEndTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Selection end"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvSelectionLength"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Selection length"
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSetStart"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Set start here"
+                    app:icon="@drawable/ic_flag" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSetEnd"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Set end here"
+                    app:icon="@drawable/ic_flag" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPlaySelection"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Play selection"
+                    app:icon="@drawable/ic_play" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSelectAll"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Select everything"
+                    app:icon="@drawable/ic_selection" />
+                </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Edit"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCut"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Cut"
+                    app:icon="@drawable/ic_cut" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCopy"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Copy"
+                    app:icon="@drawable/ic_copy" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDelete"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Delete"
+                    app:icon="@drawable/ic_delete" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPaste"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Paste here"
+                    app:icon="@drawable/ic_paste" />
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/tvClipboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Clipboard is empty"
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSave"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Save edited file"
+                    app:icon="@drawable/ic_save" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageTrim"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Keep only the part you want. Play to the start point and press Set start. Play to the end point and press Set end."
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Position"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimBackFine"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Back 0.1 second" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimGoTo"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Go to time"
+                    app:icon="@drawable/ic_time" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimForwardFine"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Forward 0.1 second" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimSetStart"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Set start here"
+                    app:icon="@drawable/ic_flag" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimSetEnd"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Set end here"
+                    app:icon="@drawable/ic_flag" />
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/tvTrimInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textStyle="bold" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimPlay"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Play selection"
+                    app:icon="@drawable/ic_play" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimReset"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Reset selection"
+                    app:icon="@drawable/ic_selection" />
+                </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimKeep"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Trim: keep only the selection"
+                    app:icon="@drawable/ic_crop" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Quick trim at the current position"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimBefore"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Cut everything before here"
+                    app:icon="@drawable/ic_cut" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimAfter"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Cut everything after here"
+                    app:icon="@drawable/ic_cut" />
+                </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrimSaveNew"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Save selection as a new file"
+                    app:icon="@drawable/ic_save" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageSplit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Play the file and press Add split mark at every place where you want a cut. Then press Split and save. You get one file for each part."
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddMark"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Add split mark here"
+                    app:icon="@drawable/ic_flag" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMarksEvery"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Add marks every…"
+                    app:icon="@drawable/ic_time" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Marks"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <TextView
+                    android:id="@+id/tvMarksEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="No split marks yet."
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <LinearLayout
+                    android:id="@+id/marksContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnClearMarks"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Clear all marks"
+                    app:icon="@drawable/ic_close" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSplit"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Split and save"
+                    app:icon="@drawable/ic_split" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageMerge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Join several files into one. Add the files, put them in order, then press Merge and save."
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMergeAdd"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Add files"
+                    app:icon="@drawable/ic_add" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMergeClear"
+                    style="@style/Widget.App.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Clear list"
+                    app:icon="@drawable/ic_close" />
+                </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Files to merge"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <TextView
+                    android:id="@+id/tvMergeEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="No files added yet."
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <LinearLayout
+                    android:id="@+id/mergeContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMergeSave"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Merge and save"
+                    app:icon="@drawable/ic_save" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageMix"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Mix a second sound, for example background music, with your main file. The added sound repeats until the main file ends."
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMixPick"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Choose the sound to add"
+                    app:icon="@drawable/ic_music" />
+                <TextView
+                    android:id="@+id/tvMixInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="No sound chosen yet."
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Volume"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <LinearLayout
+                    android:id="@+id/mixSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMixSave"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Mix and save"
+                    app:icon="@drawable/ic_save" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageEffects"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Choose the effects, then press Save with effects. Effects are applied to the whole edited file."
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <LinearLayout
+                    android:id="@+id/effectsSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEffectsSave"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Save with effects"
+                    app:icon="@drawable/ic_save" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageCompress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Make the saved file as small as you need. Tap a preset, or choose each option yourself."
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPresetSmallest"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Smallest"
+                    app:icon="@drawable/ic_volume_off" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPresetSmall"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Small"
+                    app:icon="@drawable/ic_volume_off" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPresetBalanced"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Balanced"
+                    app:icon="@drawable/ic_volume_off" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/compressSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+                <TextView
+                    android:id="@+id/tvCompressInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textStyle="bold" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCompressSave"
+                    style="@style/Widget.App.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Compress and save"
+                    app:icon="@drawable/ic_save" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageTools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Silence"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRemoveSilence"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Remove silence"
+                    app:icon="@drawable/ic_silence" />
+                <TextView
+                    android:id="@+id/tvSilenceInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Volume of the saved file"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <LinearLayout
+                    android:id="@+id/toolsSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="12dp"
+                    android:accessibilityHeading="true"
+                    android:text="Video only"
+                    android:textAppearance="@style/TextAppearance.App.Section" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveAudioOnly"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Save audio only"
+                    app:icon="@drawable/ic_music" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveNoSound"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Save video without sound"
+                    app:icon="@drawable/ic_volume_off" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveFrame"
+                    style="@style/Widget.App.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Save a picture of the current frame"
+                    app:icon="@drawable/ic_screen" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceContainer"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp">
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Ready."
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvCurrentPosition"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Position 00:00.0"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total length 00:00.0"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="Timeline. Swipe up or down to jump by the jump size."
+            android:max="1000"
+            android:minHeight="48dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRewind"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Back 5 seconds"
+                    app:icon="@drawable/ic_rewind" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPlayPause"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Play"
+                    app:icon="@drawable/ic_play" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnForward"
+                    style="@style/Widget.App.Button.Compact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:text="Forward 5 seconds"
+                    app:icon="@drawable/ic_forward" />
+                </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

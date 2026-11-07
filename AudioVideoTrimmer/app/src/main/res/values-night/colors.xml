@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="marker_start_text">#81C784</color>
+    <color name="marker_end_text">#EF9A9A</color>
+</resources>

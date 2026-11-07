@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Main menu: visible only on the home screen -->
+    <LinearLayout
+        android:id="@+id/mainBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceContainer"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainRecord"
+            style="@style/Widget.App.Button.Main"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Record"
+            app:icon="@drawable/ic_mic" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainAudio"
+            style="@style/Widget.App.Button.Main"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Audio editor"
+            app:icon="@drawable/ic_music" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainVideo"
+            style="@style/Widget.App.Button.Main"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Video editor"
+            app:icon="@drawable/ic_videocam" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainSettings"
+            style="@style/Widget.App.Button.Main"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Settings"
+            app:icon="@drawable/ic_settings" />
+    </LinearLayout>
+
+    <!-- Section bar: replaces the main menu while a section (Record, Audio editor…) is open -->
+    <LinearLayout
+        android:id="@+id/sectionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceContainer"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBackToMain"
+            style="@style/Widget.App.Button.Compact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back to main menu"
+            app:icon="@drawable/ic_back" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/sectionChips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            app:chipSpacingHorizontal="6dp"
+            app:chipSpacingVertical="0dp"
+            app:selectionRequired="true"
+            app:singleSelection="true" />
+    </LinearLayout>
+</LinearLayout>
