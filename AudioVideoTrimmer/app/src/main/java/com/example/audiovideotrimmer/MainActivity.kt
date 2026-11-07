@@ -60,14 +60,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            supportFragmentManager.commitNow {
-                setReorderingAllowed(true)
-                add(R.id.fragmentContainer, HomeFragment(), TAG_HOME)
-                add(R.id.fragmentContainer, RecordFragment(), TAG_RECORD)
-                add(R.id.fragmentContainer, EditorFragment.newInstance(false), TAG_AUDIO)
-                add(R.id.fragmentContainer, EditorFragment.newInstance(true), TAG_VIDEO)
-                add(R.id.fragmentContainer, SettingsFragment(), TAG_SETTINGS)
-            }
+            // Use the platform FragmentTransaction API directly. This avoids
+            // relying on the optional commitNow Kotlin DSL extension.
+            supportFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragmentContainer, HomeFragment(), TAG_HOME)
+                .add(R.id.fragmentContainer, RecordFragment(), TAG_RECORD)
+                .add(R.id.fragmentContainer, EditorFragment.newInstance(false), TAG_AUDIO)
+                .add(R.id.fragmentContainer, EditorFragment.newInstance(true), TAG_VIDEO)
+                .add(R.id.fragmentContainer, SettingsFragment(), TAG_SETTINGS)
+                .commitNow()
         } else {
             currentTag = savedInstanceState.getString(STATE_TAG, TAG_HOME)
         }
