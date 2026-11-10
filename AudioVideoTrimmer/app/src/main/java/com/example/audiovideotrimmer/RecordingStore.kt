@@ -35,6 +35,18 @@ object RecordingStore {
     fun saveToPhone(context: Context, file: File): String? =
         MediaSaver.save(context, file, isVideo(file), file.name, mimeFor(file))
 
+    /** "Audio recording, 7 Nov 2026 at 11:09 AM" instead of a file name full of digits. */
+    fun friendlyName(file: File): String {
+        val kind = when {
+            file.name.startsWith("audio_") -> "Audio recording"
+            file.name.startsWith("video_") -> "Video recording"
+            file.name.startsWith("screen_") -> "Screen recording"
+            else -> return file.nameWithoutExtension
+        }
+        val time = SimpleDateFormat("d MMM yyyy 'at' h:mm a", Locale.getDefault()).format(Date(file.lastModified()))
+        return "$kind, $time"
+    }
+
     fun sizeText(file: File): String {
         val kb = file.length() / 1024.0
         return if (kb < 1024) String.format(Locale.US, "%.0f KB", kb)

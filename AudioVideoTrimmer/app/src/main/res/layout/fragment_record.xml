@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="@dimen/content_padding">
 
                 <TextView
                     android:id="@+id/tvRecordTitle"
@@ -314,22 +314,46 @@
                     android:text="Recent recordings"
                     app:icon="@drawable/ic_folder_open" />
             </LinearLayout>
+
             <LinearLayout
-                android:id="@+id/pageSettings"
+                android:id="@+id/pageSettingsAudio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
             android:visibility="gone">
 
                 <LinearLayout
-                    android:id="@+id/recSettingsContainer"
+                    android:id="@+id/recSetAudio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageSettingsVideo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
 
+                <LinearLayout
+                    android:id="@+id/recSetVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/pageSettingsScreen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+            android:visibility="gone">
 
-
+                <LinearLayout
+                    android:id="@+id/recSetScreen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

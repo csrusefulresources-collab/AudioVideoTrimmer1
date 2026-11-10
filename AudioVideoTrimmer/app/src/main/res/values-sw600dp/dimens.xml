@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tablets and large screens: keep the content in a comfortable column. -->
+<resources>
+    <dimen name="content_padding">96dp</dimen>
+</resources>

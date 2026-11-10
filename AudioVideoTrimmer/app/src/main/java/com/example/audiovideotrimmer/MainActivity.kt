@@ -3,12 +3,15 @@ package com.example.audiovideotrimmer
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -70,6 +73,12 @@ class MainActivity : AppCompatActivity() {
         binding.btnMainAudio.setOnClickListener { enter(TAG_AUDIO) }
         binding.btnMainVideo.setOnClickListener { enter(TAG_VIDEO) }
         binding.btnMainSettings.setOnClickListener { enter(TAG_SETTINGS) }
+        describeAction(binding.btnMainRecord, "Open the recording section")
+        describeAction(binding.btnMainAudio, "Open the audio editor")
+        describeAction(binding.btnMainVideo, "Open the video editor")
+        describeAction(binding.btnMainSettings, "Open the settings")
+        ViewCompat.setAccessibilityPaneTitle(binding.mainBar, "Main menu")
+        ViewCompat.setAccessibilityPaneTitle(binding.sectionBar, "Section buttons")
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -138,14 +147,25 @@ class MainActivity : AppCompatActivity() {
         val screen = screenFor(tag) ?: return
         building = true
         val group = binding.sectionChips
+        group.setOnCheckedStateChangeListener(null)
         group.removeAllViews()
         chipIds.clear()
-        screen.sectionTitles.forEach { title ->
+        val titles = screen.sectionTitles
+        titles.forEach { title ->
             val chip = Chip(this, null, com.google.android.material.R.attr.chipStyle)
             chip.id = View.generateViewId()
             chip.text = title
             chip.isCheckable = true
             chip.isCheckedIconVisible = true
+            // A tab for the screen reader: role "Tab", and its state says selected or not.
+            ViewCompat.setAccessibilityDelegate(chip, object : AccessibilityDelegateCompat() {
+                override fun onInitializeAccessibilityNodeInfo(host: View, info: AccessibilityNodeInfoCompat) {
+                    super.onInitializeAccessibilityNodeInfo(host, info)
+                    info.roleDescription = "Tab"
+                    info.isCheckable = false
+                    info.isSelected = (host as? Chip)?.isChecked == true
+                }
+            })
             chipIds.add(chip.id)
             group.addView(chip)
         }
@@ -154,9 +174,48 @@ class MainActivity : AppCompatActivity() {
             val idx = chipIds.indexOf(ids.firstOrNull())
             val current = screenFor(currentTag)
             if (idx >= 0 && current != null && idx != current.selectedSection) current.selectSection(idx)
+            refreshChipStates()
         }
         syncSections()
         building = false
+    }
+
+    /** "Selected, tab 3 of 8" / "Tab 4 of 8" – spoken after the tab name. */
+    private fun refreshChipStates() {
+        val group = binding.sectionChips
+        val total = chipIds.size
+        chipIds.forEachIndexed { i, id ->
+            val chip = group.findViewById<Chip>(id) ?: return@forEachIndexed
+            val state = if (chip.isChecked) "Selected" else "Not selected"
+            ViewCompat.setStateDescription(chip, "$state, tab ${i + 1} of $total")
+        }
+    }
+
+    private fun describeAction(view: View, label: String) {
+        ViewCompat.replaceAccessibilityAction(
+            view, AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK, label, null
+        )
+    }
+
+    /** Keyboard: Ctrl+Tab / Ctrl+Shift+Tab switch section, Escape returns to the main menu. */
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN && currentTag != TAG_HOME) {
+            if (event.keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                goHome()
+                return true
+            }
+            if (event.isCtrlPressed && event.keyCode == KeyEvent.KEYCODE_TAB) {
+                val screen = screenFor(currentTag)
+                if (screen != null && screen.sectionTitles.isNotEmpty()) {
+                    val n = screen.sectionTitles.size
+                    val next = (screen.selectedSection + if (event.isShiftPressed) n - 1 else 1) % n
+                    screen.selectSection(next)
+                    syncSections()
+                }
+                return true
+            }
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     /** Called by a section screen when it changed its own section (for example "Open" from the library). */
@@ -168,6 +227,7 @@ class MainActivity : AppCompatActivity() {
             building = true
             binding.sectionChips.check(chipIds[idx])
             building = was
+            refreshChipStates()
         }
     }
 

@@ -61,7 +61,8 @@
     <string name="clear_marks">Clear all marks</string>
     <string name="split_save_fmt">Split and save (%1$d files)</string>
     <string name="marks_empty">No split marks yet. Play the file and tap Add split mark at each place where you want to cut.</string>
-    <string name="mark_row_fmt">Mark %1$d at %2$s</string>
+    <string name="mark_row_fmt">Mark at %2$s</string>
+    <string name="cd_mark_row_fmt">Mark %1$d, at %2$s</string>
     <string name="mark_go">Go to</string>
     <string name="mark_delete">Delete</string>
     <string name="cd_mark_go_fmt">Go to mark %1$d</string>
@@ -113,8 +114,8 @@
     <string name="msg_invalid_time">That time is not valid.</string>
     <string name="msg_export_started">Saving started. Please wait.</string>
     <string name="msg_export_progress_fmt">Saving file %1$d of %2$d, %3$d percent</string>
-    <string name="msg_saved_one_fmt">Saved %1$s in %2$s.</string>
-    <string name="msg_saved_many_fmt">Saved %1$d files in %2$s.</string>
+    <string name="msg_saved_one_fmt">The file was saved in %2$s.</string>
+    <string name="msg_saved_many_fmt">%1$d files were saved in %2$s.</string>
     <string name="msg_save_failed">Could not save the file.</string>
     <string name="msg_export_failed">Saving failed. This file format may not be supported on your device.</string>
     <string name="msg_export_cancelled">Saving cancelled.</string>
@@ -148,7 +149,7 @@
     <string name="rec_resume">Resume</string>
     <string name="rec_stop">Stop and save</string>
     <string name="rec_say_time">Say elapsed time</string>
-    <string name="rec_timer_initial">00:00</string>
+    <string name="rec_timer_initial">Not recording</string>
     <string name="rec_state_ready">Ready to record</string>
     <string name="rec_heading_last">Last recording</string>
     <string name="last_none">No recordings yet.</string>

@@ -11,8 +11,8 @@ android {
         applicationId = "com.example.audiovideotrimmer"
         minSdk = 28  // Android 9
         targetSdk = 35  // Android 15/16 compatible
-        versionCode = 9
-        versionName = "4.3.1"
+        versionCode = 10
+        versionName = "4.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

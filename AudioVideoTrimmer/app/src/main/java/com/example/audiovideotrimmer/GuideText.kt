@@ -21,7 +21,7 @@ object GuideText {
             "Shows your last recording. Play it, open it in the right editor with Edit, save a copy to the phone, share it, or delete it. " +
             "Recent recordings lets you pick an older one. Recordings are also copied automatically to Music or Movies, in the folder AudioVideoTrimmer, unless you turn that off.",
 
-        "Record tab – Settings" to
+        "Record tab – Audio, Video and Screen settings" to
             "Audio: sample rate, mono or stereo, noise reduction, echo cancellation, automatic gain and microphone mode. " +
             "Video: quality up to 4K, back or front camera, sound on or off. " +
             "Screen: size, frames per second, bitrate, microphone and the floating buttons. " +

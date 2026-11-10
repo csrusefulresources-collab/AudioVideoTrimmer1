@@ -210,7 +210,8 @@ class EditorFragment : Fragment(), SectionScreen {
                 binding.pageMix, binding.pageEffects, binding.pageCompress, binding.pageTools
             ),
             binding.pagesScroll,
-            viewModel.selectedTab
+            viewModel.selectedTab,
+            TITLES
         ) {
             viewModel.selectedTab = it
             refreshPageContent()
@@ -1058,7 +1059,7 @@ class EditorFragment : Fragment(), SectionScreen {
             }
             viewModel.mixOverlay = MergeItem(uri.toString(), info.name, info.durationMs, info.hasVideo)
             updateMixInfo()
-            announce("Chosen: ${info.name}, ${TimeFormat.spoken(info.durationMs)} long.")
+            announce("Sound chosen, ${TimeFormat.spoken(info.durationMs)} long.")
         }
     }
 
@@ -1080,7 +1081,7 @@ class EditorFragment : Fragment(), SectionScreen {
         items.forEachIndexed { i, item ->
             val row = ItemMergeBinding.inflate(layoutInflater, box, false)
             val number = i + 1
-            row.tvMergeName.text = "$number. ${item.name} (${TimeFormat.format(item.durationMs)})"
+            row.tvMergeName.text = "${item.name} (${TimeFormat.format(item.durationMs)})"
             row.tvMergeName.contentDescription =
                 "Number $number: ${item.name}, ${TimeFormat.spoken(item.durationMs)}"
             row.btnMergeUp.contentDescription = "Move number $number up"
@@ -1589,7 +1590,7 @@ class EditorFragment : Fragment(), SectionScreen {
         val message = if (savedNames.size == 1) {
             getString(R.string.msg_saved_one_fmt, savedNames[0], savedWhere)
         } else {
-            getString(R.string.msg_saved_many_fmt, savedNames.size, savedWhere) + "\n" + savedNames.joinToString("\n")
+            getString(R.string.msg_saved_many_fmt, savedNames.size, savedWhere)
         }
         announce(message)
     }
@@ -1759,7 +1760,7 @@ class EditorFragment : Fragment(), SectionScreen {
             val row = ItemMarkBinding.inflate(layoutInflater, container, false)
             val number = i + 1
             row.tvMark.text = getString(R.string.mark_row_fmt, number, TimeFormat.format(ms))
-            row.tvMark.contentDescription = getString(R.string.mark_row_fmt, number, TimeFormat.spoken(ms))
+            row.tvMark.contentDescription = getString(R.string.cd_mark_row_fmt, number, TimeFormat.spoken(ms))
             row.btnGoToMark.contentDescription = getString(R.string.cd_mark_go_fmt, number)
             row.btnGoToMark.setOnClickListener {
                 seekToTimeline(ms)

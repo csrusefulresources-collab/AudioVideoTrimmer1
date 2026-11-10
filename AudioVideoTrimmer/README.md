@@ -1,4 +1,4 @@
-# Audio Video Trimmer 4.3
+# Audio Video Trimmer 4.4
 
 Accessible Android app for **recording** and **editing** audio and video, built for TalkBack users first.
 Works on Android 9 (API 28) → Android 16.
@@ -8,12 +8,12 @@ Works on Android 9 (API 28) → Android 16.
 * **Main menu** (home): the bottom of the screen shows four buttons: **Record · Audio editor · Video editor · Settings**.
 * Open one and those four buttons are **hidden**. The bottom now shows only the buttons of that part (use the phone's **Back** button to return to the main menu):
 
-| Part | Buttons at the bottom |
+| Part | Section buttons at the bottom (each one is a separate tab) |
 |---|---|
-| **Record** | Record · Library · Settings |
+| **Record** | Record · Library · Audio settings · Video settings · Screen settings |
 | **Audio editor** | Edit · Trim · Split · Merge · Mix · Effects · Compress · Tools |
 | **Video editor** | Edit · Trim · Split · Merge · Mix · Effects · Compress · Tools |
-| **Settings** | Recording · Audio · Video · General · About · Logs |
+| **Settings** | Audio recording · Video recording · Screen recording · Audio editing · Video editing · General · Guide · About · Logs |
 
 * The middle of the screen shows **only the chosen button's content** and scrolls. While you are in Trim you only see and swipe through Trim; other tools are not on the screen.
 * The phone's Back button returns to the main menu, then exits from the main menu.
@@ -91,3 +91,12 @@ app/src/main/java/com/example/audiovideotrimmer/
 * Noise reduction / echo cancellation depend on the device; the app says when one is unavailable. These are recording-time effects; a "clean up existing audio" tool is a good next step.
 * Ideas for next updates: volume / fade / speed / normalize, EQ and echo effect, video crop / rotate / speed, merge several files, bookmarks, Urdu interface.
 * UI language is English (settings texts are in `SettingsUi.kt`, ready to move into string resources).
+
+## Accessibility design notes (4.4)
+
+* **One topic per tab.** Only the chosen tab's content exists on screen; the others are removed from the layout and from the screen reader's reading order. Settings, the guide, about/contact and logs are separate tabs, and the Record part has its own settings page for audio, video and screen.
+* **Real tabs.** The section buttons are announced as "Tab", say whether they are selected ("Selected, tab 3 of 8") and the opened tab's name is announced when its content appears (pane title). The section buttons sit in their own group ("Section buttons"), separate from the content.
+* **No digit-heavy labels.** Recordings are named like "Audio recording, 7 Nov 2026 at 11:09 AM" instead of file names with long numbers. Buttons have no numeric prefixes. Time texts are skipped by the screen reader because the slider speaks the position.
+* **Keyboard / switch access.** Tab and arrow keys move focus; a thick high-contrast ring marks the focused button; **Ctrl+Tab** and **Ctrl+Shift+Tab** change tab; **Escape** returns to the main menu.
+* **Large targets and responsive padding.** Buttons are at least 48 dp high; on tablets (600 dp and wider) the content gets wide side margins so lines stay readable.
+* **Honest limit:** Android always lets a screen reader move on to the next element, so the section buttons (bottom) can still be reached by swiping past the end of the content. Content of one tab never appears in another.

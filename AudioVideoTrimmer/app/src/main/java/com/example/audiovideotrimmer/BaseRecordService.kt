@@ -196,7 +196,7 @@ abstract class BaseRecordService : Service() {
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
 
         if (file != null && file.exists() && file.length() > 0L) {
-            RecordState.post("Recording stopped. Saved as ${file.name}.")
+            RecordState.post("Recording stopped and saved. You can find it in the Library.")
             if (Prefs.autoSaveToPhone) {
                 val app = applicationContext
                 Thread {

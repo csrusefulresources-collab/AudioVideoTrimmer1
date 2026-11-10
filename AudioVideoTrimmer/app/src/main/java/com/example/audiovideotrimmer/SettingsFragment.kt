@@ -73,26 +73,32 @@ class SettingsFragment : Fragment(), SectionScreen {
         when (selected) {
             0 -> {
                 SettingsUi.heading(ctx, box, "Audio recording")
-                SettingsUi.note(ctx, box, "Records lossless WAV: 16-bit, up to 48 kHz.")
+                SettingsUi.note(ctx, box, "Records lossless sound: 16-bit, up to 48 kilohertz.")
                 SettingsUi.audioRecording(ctx, box, true, noop)
-                SettingsUi.heading(ctx, box, "Video recording (camera)")
-                SettingsUi.videoRecording(ctx, box, noop)
-                SettingsUi.heading(ctx, box, "Screen recording")
-                SettingsUi.screenRecording(ctx, box, true, noop)
-                SettingsUi.heading(ctx, box, "All recordings")
                 SettingsUi.commonRecording(ctx, box, noop)
             }
             1 -> {
+                SettingsUi.heading(ctx, box, "Video recording with the camera")
+                SettingsUi.videoRecording(ctx, box, noop)
+                SettingsUi.commonRecording(ctx, box, noop)
+            }
+            2 -> {
+                SettingsUi.heading(ctx, box, "Screen recording")
+                SettingsUi.screenRecording(ctx, box, true, noop)
+                SettingsUi.commonRecording(ctx, box, noop)
+            }
+            3 -> {
                 SettingsUi.heading(ctx, box, "Audio editor")
                 SettingsUi.audioEditing(ctx, box, noop)
             }
-            2 -> {
+            4 -> {
                 SettingsUi.heading(ctx, box, "Video editor")
                 SettingsUi.videoEditing(ctx, box, noop)
             }
-            3 -> buildGeneral(box)
-            4 -> buildAbout(box)
-            5 -> buildLogs(box)
+            5 -> buildGeneral(box)
+            6 -> buildGuide(box)
+            7 -> buildAbout(box)
+            8 -> buildLogs(box)
         }
     }
 
@@ -134,6 +140,16 @@ class SettingsFragment : Fragment(), SectionScreen {
 
     // ------------------------------------------------------------------- About
 
+    /** The whole user guide, one topic after the other, in its own section. */
+    private fun buildGuide(box: ViewGroup) {
+        val ctx = requireContext()
+        SettingsUi.heading(ctx, box, "User guide")
+        for ((title, body) in GuideText.sections) {
+            SettingsUi.heading(ctx, box, title)
+            SettingsUi.paragraph(ctx, box, body)
+        }
+    }
+
     @Suppress("DEPRECATION")
     private fun buildAbout(box: ViewGroup) {
         val ctx = requireContext()
@@ -149,28 +165,20 @@ class SettingsFragment : Fragment(), SectionScreen {
             "Record audio, video and the screen in high quality, then cut, trim, split, merge, mix, " +
                 "compress and clean up your recordings. Made to work well with screen readers."
         )
-
         SettingsUi.heading(ctx, box, "Contact the developer")
         SettingsUi.paragraph(ctx, box, "Questions, ideas or problems? Write to the developer on WhatsApp.")
         SettingsUi.addButton(ctx, box, "Contact the developer") {
             val ok = Contact.openChat(ctx, "Hello, I am using Audio Video Trimmer (version $version).")
             if (!ok) binding.root.announceForAccessibility("WhatsApp could not be opened.")
         }
-
         SettingsUi.heading(ctx, box, "Privacy")
         SettingsUi.paragraph(
             ctx, box,
             "This app does not use the internet. It has no ads and no analytics. " +
                 "Your recordings stay on your phone until you share them yourself. " +
                 "A bug report is created only when you ask for it, and it is sent only when you press send in WhatsApp or another app. " +
-                "The Logs page shows exactly what a report contains."
+                "The Logs section shows exactly what a report contains."
         )
-
-        SettingsUi.heading(ctx, box, "User guide")
-        for ((title, body) in GuideText.sections) {
-            SettingsUi.heading(ctx, box, title)
-            SettingsUi.paragraph(ctx, box, body)
-        }
     }
 
     // -------------------------------------------------------------------- Logs
@@ -304,6 +312,9 @@ class SettingsFragment : Fragment(), SectionScreen {
     }
 
     companion object {
-        val TITLES = listOf("Recording", "Audio", "Video", "General", "About", "Logs")
+        val TITLES = listOf(
+            "Audio recording", "Video recording", "Screen recording",
+            "Audio editing", "Video editing", "General", "Guide", "About", "Logs"
+        )
     }
 }

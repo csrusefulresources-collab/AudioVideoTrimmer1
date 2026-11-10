@@ -186,11 +186,20 @@ class RecordFragment : Fragment(), SectionScreen {
             val ms = RecordState.state.value.elapsedMs
             announce("Recording time: ${TimeFormat.spoken(ms)}.", force = true)
         }
-        b.btnMoreSettings.setOnClickListener { selectSection(2) }
+        b.btnMoreSettings.setOnClickListener {
+            selectSection(
+                when (mode) {
+                    Mode.AUDIO -> 2
+                    Mode.VIDEO -> 3
+                    Mode.SCREEN -> 4
+                }
+            )
+        }
         switcher = PageSwitcher(
-            listOf(b.pageRecord, b.pageLibrary, b.pageSettings),
+            listOf(b.pageRecord, b.pageLibrary, b.pageSettingsAudio, b.pageSettingsVideo, b.pageSettingsScreen),
             b.recordScroll,
-            selectedTab
+            selectedTab,
+            TITLES
         ) {
             selectedTab = it
             (activity as? MainActivity)?.syncSections()
@@ -336,27 +345,39 @@ class RecordFragment : Fragment(), SectionScreen {
     private fun onOff(v: Boolean) = if (v) "on" else "off"
     private fun countdownText() = if (Prefs.countdownSeconds == 0) "off" else "${Prefs.countdownSeconds} seconds"
 
+    /** Each kind of recording has its own settings page; nothing is mixed. */
     private fun rebuildQuickSettings() {
         val bd = _b ?: return
         val ctx = context ?: return
-        val box = bd.recSettingsContainer
-        box.removeAllViews()
         val changed = {
             if (mode == Mode.VIDEO) unbindCamera()
             refreshSummary()
         }
-        SettingsUi.heading(ctx, box, "Audio recording")
-        SettingsUi.audioRecording(ctx, box, true, changed)
-        SettingsUi.addSwitch(ctx, box, "Remove silence when I edit an audio recording",
-            "Silence is removed automatically when you tap Edit. You can undo it.",
+        val audio = bd.recSetAudio
+        audio.removeAllViews()
+        SettingsUi.heading(ctx, audio, "Audio recording settings")
+        SettingsUi.audioRecording(ctx, audio, true, changed)
+        SettingsUi.addSwitch(ctx, audio, "Remove silence when I edit an audio recording",
+            "Silence is removed automatically when you open the recording in the editor. You can undo it.",
             { Prefs.autoSilence }, { Prefs.autoSilence = it }, changed)
-        SettingsUi.heading(ctx, box, "Video recording (camera)")
-        SettingsUi.videoRecording(ctx, box, changed)
-        SettingsUi.heading(ctx, box, "Screen recording")
-        SettingsUi.screenRecording(ctx, box, true, changed)
-        SettingsUi.heading(ctx, box, "All recordings")
-        SettingsUi.commonRecording(ctx, box, changed)
-        SettingsUi.setEnabledDeep(box, !RecordState.isBusy)
+        SettingsUi.commonRecording(ctx, audio, changed)
+
+        val video = bd.recSetVideo
+        video.removeAllViews()
+        SettingsUi.heading(ctx, video, "Video recording settings")
+        SettingsUi.videoRecording(ctx, video, changed)
+        SettingsUi.commonRecording(ctx, video, changed)
+
+        val screen = bd.recSetScreen
+        screen.removeAllViews()
+        SettingsUi.heading(ctx, screen, "Screen recording settings")
+        SettingsUi.screenRecording(ctx, screen, true, changed)
+        SettingsUi.commonRecording(ctx, screen, changed)
+
+        val enabled = !RecordState.isBusy
+        SettingsUi.setEnabledDeep(audio, enabled)
+        SettingsUi.setEnabledDeep(video, enabled)
+        SettingsUi.setEnabledDeep(screen, enabled)
         refreshSummary()
     }
 
@@ -632,7 +653,7 @@ class RecordFragment : Fragment(), SectionScreen {
                 val ctx = context?.applicationContext
                 if (file != null && file.exists() && file.length() > 1000L && ctx != null) {
                     Feedback.cue(ctx, high = true)
-                    RecordState.post("Recording stopped. Saved as ${file.name}.")
+                    RecordState.post("Recording stopped and saved. You can find it in the Library.")
                     if (Prefs.autoSaveToPhone) {
                         Thread {
                             val where = try {
@@ -717,7 +738,9 @@ class RecordFragment : Fragment(), SectionScreen {
         if (active != lastActive) {
             lastActive = active
             for (i in 0 until bd.modeGroup.childCount) bd.modeGroup.getChildAt(i).isEnabled = !active
-            SettingsUi.setEnabledDeep(bd.recSettingsContainer, !active)
+            SettingsUi.setEnabledDeep(bd.recSetAudio, !active)
+            SettingsUi.setEnabledDeep(bd.recSetVideo, !active)
+            SettingsUi.setEnabledDeep(bd.recSetScreen, !active)
         }
         if (focusRecordAfterChange && s.phase != lastPhase) {
             focusRecordAfterChange = false
@@ -827,16 +850,16 @@ class RecordFragment : Fragment(), SectionScreen {
             return
         }
         bd.playerViewLast.visibility = if (RecordingStore.isVideo(file)) View.VISIBLE else View.GONE
-        bd.tvLastInfo.text = "${file.name} — ${RecordingStore.sizeText(file)}"
+        bd.tvLastInfo.text = "${RecordingStore.friendlyName(file)}, ${RecordingStore.sizeText(file)}"
         if (changed) loadIntoPlayer(file)
         viewLifecycleOwner.lifecycleScope.launch {
             val duration = withContext(Dispatchers.IO) { durationOf(ctx, file) }
             if (currentFile == file && _b != null) {
                 val kind = if (RecordingStore.isVideo(file)) "Video" else "Audio"
-                val text = "${file.name} — $kind, ${TimeFormat.format(duration)}, ${RecordingStore.sizeText(file)}"
+                val text = "${RecordingStore.friendlyName(file)}. Length ${TimeFormat.format(duration)}, ${RecordingStore.sizeText(file)}"
                 _b?.tvLastInfo?.text = text
                 _b?.tvLastInfo?.contentDescription =
-                    "${file.name} — $kind, ${TimeFormat.spoken(duration)}, ${RecordingStore.sizeText(file)}"
+                    "${RecordingStore.friendlyName(file)}. Length ${TimeFormat.spoken(duration)}, ${RecordingStore.sizeText(file)}"
             }
         }
     }
@@ -911,7 +934,7 @@ class RecordFragment : Fragment(), SectionScreen {
         viewLifecycleOwner.lifecycleScope.launch {
             val where = withContext(Dispatchers.IO) { RecordingStore.saveToPhone(app, file) }
             announce(
-                if (where != null) "Saved ${file.name} in $where." else "Could not save the file.",
+                if (where != null) "The recording was saved in $where." else "Could not save the file.",
                 force = true
             )
         }
@@ -936,7 +959,7 @@ class RecordFragment : Fragment(), SectionScreen {
         val file = currentFile ?: return
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Delete this recording?")
-            .setMessage("${file.name} will be deleted from the app. A copy saved on the phone is not deleted.")
+            .setMessage("${RecordingStore.friendlyName(file)} will be deleted from the app. A copy saved on the phone is not deleted.")
             .setPositiveButton("Delete") { _, _ ->
                 player?.stop()
                 player?.clearMediaItems()
@@ -954,19 +977,19 @@ class RecordFragment : Fragment(), SectionScreen {
         val ctx = requireContext()
         val files = RecordingStore.list(ctx).take(30)
         if (files.isEmpty()) return
-        val labels = files.map { "${it.name} (${RecordingStore.sizeText(it)})" }.toTypedArray()
+        val labels = files.map { "${RecordingStore.friendlyName(it)}, ${RecordingStore.sizeText(it)}" }.toTypedArray()
         MaterialAlertDialogBuilder(ctx)
             .setTitle(R.string.last_recent)
             .setItems(labels) { _, which ->
                 currentFile = files[which]
                 refreshLast()
-                announce("Selected ${files[which].name}.", force = true)
+                announce("Selected ${RecordingStore.friendlyName(files[which])}.", force = true)
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
     companion object {
-        val TITLES = listOf("Record", "Library", "Settings")
+        val TITLES = listOf("Record", "Library", "Audio settings", "Video settings", "Screen settings")
     }
 }

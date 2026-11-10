@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thick, high-contrast ring while the button has keyboard / switch focus; invisible otherwise. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:color="?attr/colorOnSurface" />
+    <item android:color="@android:color/transparent" />
+</selector>
